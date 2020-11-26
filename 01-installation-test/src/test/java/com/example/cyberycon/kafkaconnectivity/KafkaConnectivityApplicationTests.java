@@ -30,20 +30,23 @@ class KafkaConnectivityApplicationTests {
 	
 	Logger logger = LoggerFactory.getLogger(KafkaConnectivityApplicationTests.class); 
 
+	private final static String TEST_TOPIC = "topic-1"; 
+	
 	@Test
-	public void testAutoCommit() throws Exception {
-		logger.info("Start auto");
-
+	public void testSendAndReceive() throws Exception {
 		KafkaTemplate<Integer, String> template = createTemplate();
-		template.setDefaultTopic("topic1");
+		template.setDefaultTopic(TEST_TOPIC);
 		template.sendDefault(0, "foo");
-		template.sendDefault(2, "bar");
-		template.sendDefault(0, "baz");
-		template.sendDefault(2, "qux");
+		template.sendDefault(0, "bar");
 		template.flush();
 		
-		ContainerProperties containerProps = new ContainerProperties("topic1", "topic2");
-		final CountDownLatch latch = new CountDownLatch(4);
+		// If the listener starts running before the messages have been sent, the topic 
+		// does not exist and the tight loop in the listener prevents the topic from ever 
+		// getting created . 
+		Thread.sleep(1000);
+		
+		ContainerProperties containerProps = new ContainerProperties(TEST_TOPIC);
+		final CountDownLatch latch = new CountDownLatch(2);
 		containerProps.setMessageListener(new MessageListener<Integer, String>() {
 
 			@Override
