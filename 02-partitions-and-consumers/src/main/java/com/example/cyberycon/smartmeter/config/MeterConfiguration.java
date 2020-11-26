@@ -1,14 +1,26 @@
 package com.example.cyberycon.smartmeter.config;
 
+import com.example.cyberycon.smartmeter.Meter;
+import com.example.cyberycon.smartmeter.event.MeterReadingSender;
+import com.example.cyberycon.smartmeter.event.MeterReadingSenderKafkaImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
 @ConfigurationProperties(prefix = "meter")
+@EnableKafka
 public class MeterConfiguration {
 	private int interval;
 	private String area ; 
 	private String topic; 
+
+
+	@Autowired
+	private KafkaTemplate<String, String> template;
 
 	public int getInterval() {
 		return interval;
@@ -32,5 +44,13 @@ public class MeterConfiguration {
 
 	public void setTopic(String topic) {
 		this.topic = topic;
-	} 
+	}
+
+	@Bean
+	public MeterReadingSender sender() {
+		return new MeterReadingSenderKafkaImpl(template, this);
+	}
+
+
+
 }

@@ -6,20 +6,22 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.example.cyberycon.smartmeter.event.MeterReadingSender;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
+@ActiveProfiles("test")
 public class SmartMeterTests {
 	
 	@Autowired 
@@ -39,7 +41,7 @@ public class SmartMeterTests {
 		CountDownLatch latch = new CountDownLatch(3); 
 		((MockSender) sender).setCountdownLatch(latch);
 		meter.start(); 
-		assertTrue(latch.await(5, TimeUnit.SECONDS)) ; 
+		assertTrue(latch.await(10, TimeUnit.SECONDS)) ;
 	}
 
 	public static class MockSender implements MeterReadingSender {

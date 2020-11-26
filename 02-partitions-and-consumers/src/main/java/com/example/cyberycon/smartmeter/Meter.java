@@ -1,5 +1,7 @@
 package com.example.cyberycon.smartmeter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.example.cyberycon.smartmeter.config.MeterConfiguration;
 import com.example.cyberycon.smartmeter.event.MeterReadingSender;
@@ -15,12 +17,16 @@ public class Meter implements Runnable {
 
 	private MeterReadingSender sender;
 
+	private static Logger logger = LoggerFactory.getLogger(Meter.class);
+
+
 	public Meter(MeterConfiguration config, MeterReadingSender sender) {
 		this.config = config; 
 		this.sender = sender; 
 	}
 
 	public void start() {
+		logger.info("Config interval is " + config.getInterval() ) ;
 		Thread t = new Thread(this); 
 		t.start(); 
 	}
