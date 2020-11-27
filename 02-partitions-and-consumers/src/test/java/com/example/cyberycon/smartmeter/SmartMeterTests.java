@@ -54,9 +54,7 @@ public class SmartMeterTests {
 		public void sendReading(long timestamp, int reading) {
 			if (reading <= lastReading )
 				fail("Reading values are not increasing") ; 
-			
 			latch.countDown();
-			
 		}
 		
 		public void setCountdownLatch(CountDownLatch latch ) { 
