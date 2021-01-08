@@ -17,6 +17,9 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -25,44 +28,25 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 
-
+@SpringBootTest
 class KafkaConnectivityApplicationTests {
 	
-	Logger logger = LoggerFactory.getLogger(KafkaConnectivityApplicationTests.class); 
+	Logger logger = LoggerFactory.getLogger(KafkaConnectivityApplicationTests.class);
+
+    @Autowired
+    private KafkaTemplate<String, String> template;
+
+    private final CountDownLatch latch = new CountDownLatch(3);
 
 	private final static String TEST_TOPIC = "topic-1"; 
 	
 	@Test
 	public void testSendAndReceive() throws Exception {
-		KafkaTemplate<Integer, String> template = createTemplate();
 		template.setDefaultTopic(TEST_TOPIC);
-		template.sendDefault(0, "foo");
-		template.sendDefault(0, "bar");
-		template.flush();
-		
-		// If the listener starts running before the messages have been sent, the topic 
-		// does not exist and the tight loop in the listener prevents the topic from ever 
-		// getting created . 
-		Thread.sleep(1000);
-		
-		ContainerProperties containerProps = new ContainerProperties(TEST_TOPIC);
-		final CountDownLatch latch = new CountDownLatch(2);
-		containerProps.setMessageListener(new MessageListener<Integer, String>() {
-
-			@Override
-			public void onMessage(ConsumerRecord<Integer, String> message) {
-				logger.info("received: " + message);
-				latch.countDown();
-			}
-
-		});
-		KafkaMessageListenerContainer<Integer, String> container = createContainer(containerProps);
-		container.setBeanName("testAuto");
-		container.start();
-		assertTrue(latch.await(60, TimeUnit.SECONDS));
-		container.stop();
-		logger.info("Stop auto");
-
+		template.sendDefault("0", "foo");
+		template.sendDefault("0", "bar");
+        template.sendDefault("0", "goo");
+		assertTrue(latch.await(10, TimeUnit.SECONDS));
 	}
 
 	private KafkaMessageListenerContainer<Integer, String> createContainer(ContainerProperties containerProps) {
@@ -104,5 +88,11 @@ class KafkaConnectivityApplicationTests {
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		return props;
 	}
+
+    @KafkaListener(topics = TEST_TOPIC)
+    public void listen(ConsumerRecord<?, ?> cr) throws Exception {
+        logger.info(cr.toString());
+        latch.countDown();
+    }
 
 }

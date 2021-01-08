@@ -12,7 +12,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 
 @Configuration
 @ConfigurationProperties(prefix = "meter")
-@EnableKafka
 public class MeterConfiguration {
 	private int interval;
 	private String area ; 
@@ -45,12 +44,4 @@ public class MeterConfiguration {
 	public void setTopic(String topic) {
 		this.topic = topic;
 	}
-
-	@Bean
-	public MeterReadingSender sender() {
-		return new MeterReadingSenderKafkaImpl(template, this);
-	}
-
-
-
 }

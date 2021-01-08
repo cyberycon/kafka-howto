@@ -3,7 +3,9 @@ package com.example.cyberycon.smartmeter.event;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import com.example.cyberycon.smartmeter.config.MeterConfiguration;
+import org.springframework.stereotype.Service;
 
+@Service
 public class MeterReadingSenderKafkaImpl implements MeterReadingSender {
 
 	private KafkaTemplate<String,String> kafkaTemplate;

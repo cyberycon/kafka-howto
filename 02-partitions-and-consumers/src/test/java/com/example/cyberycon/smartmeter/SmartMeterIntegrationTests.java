@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@EmbeddedKafka(partitions = 2, brokerProperties = { "listeners=PLAINTEXT://localhost:19092", "port=19092" })
-@ActiveProfiles("test")
+// @EmbeddedKafka(partitions = 2, brokerProperties = { "listeners=PLAINTEXT://localhost:19092", "port=19092" })
+//@ActiveProfiles("test")
 public class SmartMeterIntegrationTests {
 
 	private CountDownLatch latch ;
@@ -32,7 +32,7 @@ public class SmartMeterIntegrationTests {
 		assertNotNull(meter);
 	}
 
-	@Test
+		@Test
 	public void shouldSendReadings() throws InterruptedException {
 		latch = new CountDownLatch(3) ;
 		meter.start();
