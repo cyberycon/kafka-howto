@@ -3,6 +3,8 @@ package com.example.cyberycon.smartmeter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -19,31 +21,32 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 // @EmbeddedKafka(partitions = 2, brokerProperties = { "listeners=PLAINTEXT://localhost:19092", "port=19092" })
-//@ActiveProfiles("test")
 public class SmartMeterIntegrationTests {
 
-	private CountDownLatch latch ;
+	private Logger logger = LoggerFactory.getLogger(SmartMeterIntegrationTests.class);
+
+	private CountDownLatch latch;
 
 	@Autowired
 	private Meter meter;
+
+	@Autowired
+	private TestListener listener;
 
 	@Test
 	public void loadContext() {
 		assertNotNull(meter);
 	}
 
-		@Test
+	@Test
 	public void shouldSendReadings() throws InterruptedException {
-		latch = new CountDownLatch(3) ;
+		latch = new CountDownLatch(3);
+		listener.setLatch(latch);
 		meter.start();
-		assertTrue(latch.await(10, TimeUnit.SECONDS));
+		assertTrue(latch.await(20, TimeUnit.SECONDS));
 		meter.stop();
 	}
 
-	@KafkaListener(topics = "meter.reading")
-	public void listen(ConsumerRecord<String,String> cr) {
-		String[] values = cr.value().split(":");
-		assertEquals(2, values.length);
-	}
+
 
 }
