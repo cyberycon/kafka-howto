@@ -28,25 +28,39 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 
-@SpringBootTest
+
 class KafkaConnectivityApplicationTests {
-	
+
 	Logger logger = LoggerFactory.getLogger(KafkaConnectivityApplicationTests.class);
 
-    @Autowired
-    private KafkaTemplate<String, String> template;
+	private final static String TEST_TOPIC = "topic-1";
 
-    private final CountDownLatch latch = new CountDownLatch(3);
-
-	private final static String TEST_TOPIC = "topic-1"; 
-	
 	@Test
 	public void testSendAndReceive() throws Exception {
+		KafkaTemplate<Integer, String> template = createTemplate();
 		template.setDefaultTopic(TEST_TOPIC);
-		template.sendDefault("0", "foo");
-		template.sendDefault("0", "bar");
-        template.sendDefault("0", "goo");
-		assertTrue(latch.await(10, TimeUnit.SECONDS));
+		template.sendDefault(0, "foo");
+		template.sendDefault(0, "bar");
+		template.flush();
+
+		ContainerProperties containerProps = new ContainerProperties(TEST_TOPIC);
+		final CountDownLatch latch = new CountDownLatch(2);
+		containerProps.setMessageListener(new MessageListener<Integer, String>() {
+
+			@Override
+			public void onMessage(ConsumerRecord<Integer, String> message) {
+				logger.info("received: " + message);
+				latch.countDown();
+			}
+
+		});
+		KafkaMessageListenerContainer<Integer, String> container = createContainer(containerProps);
+		container.setBeanName("testAuto");
+		container.start();
+		assertTrue(latch.await(60, TimeUnit.SECONDS));
+		container.stop();
+		logger.info("Stop auto");
+
 	}
 
 	private KafkaMessageListenerContainer<Integer, String> createContainer(ContainerProperties containerProps) {
@@ -73,7 +87,7 @@ class KafkaConnectivityApplicationTests {
 		props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "15000");
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest"); 
+		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 		return props;
 	}
 
@@ -88,11 +102,4 @@ class KafkaConnectivityApplicationTests {
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		return props;
 	}
-
-    @KafkaListener(topics = TEST_TOPIC)
-    public void listen(ConsumerRecord<?, ?> cr) throws Exception {
-        logger.info(cr.toString());
-        latch.countDown();
-    }
-
 }
