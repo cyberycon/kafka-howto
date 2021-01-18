@@ -16,7 +16,7 @@ public class TestListener {
     @KafkaListener(topics = "meter.reading")
     public void listen(ConsumerRecord<String,String> cr) {
         String[] values = cr.value().split(":");
-        assertEquals(2, values.length);
+        assertEquals(3, values.length);
         if (latch != null) {
             latch.countDown();
         }

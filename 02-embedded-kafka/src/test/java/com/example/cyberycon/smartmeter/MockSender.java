@@ -12,15 +12,22 @@ public class MockSender implements MeterReadingSender {
 
     private int lastReading = 0 ;
 
+    private String meterId ;
+
     @Override
-    public void sendReading(long timestamp, int reading) {
+    public void sendReading(String meterId, long timestamp, int reading) {
         if (reading <= lastReading )
             fail("Reading values are not increasing") ;
+        this.meterId = meterId;
         latch.countDown();
+
     }
 
     public void setCountdownLatch(CountDownLatch latch ) {
         this.latch = latch;
     }
 
+    public String getMeterId() {
+        return meterId;
+    }
 }

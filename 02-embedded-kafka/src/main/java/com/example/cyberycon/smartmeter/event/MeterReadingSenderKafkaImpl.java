@@ -1,25 +1,29 @@
 package com.example.cyberycon.smartmeter.event;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import com.example.cyberycon.smartmeter.config.MeterConfiguration;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MeterReadingSenderKafkaImpl implements MeterReadingSender {
 
 	private KafkaTemplate<String,String> kafkaTemplate;
-	private MeterConfiguration config;
 
-	public MeterReadingSenderKafkaImpl(KafkaTemplate<String,String> kafkaTemplate, MeterConfiguration config) {
-		this.config = config; 
-		this.kafkaTemplate = kafkaTemplate; 
+	@Value("${meter.topic}")
+	private String topic ;
+
+	@Value ("${meter.area}")
+	private String area ;
+
+	public MeterReadingSenderKafkaImpl(KafkaTemplate<String,String> kafkaTemplate) {
+		this.kafkaTemplate = kafkaTemplate;
 	}
 	
 	@Override
-	public void sendReading(long timestamp, int reading) {
-		String meterReading = String.format("%d:%d", timestamp, reading); 
-		kafkaTemplate.send(config.getTopic(), config.getArea(), meterReading); 
+	public void sendReading(String meterId, long timestamp, int reading) {
+		String meterReading = String.format("%s:%d:%d", meterId, timestamp, reading);
+		kafkaTemplate.send(topic, area, meterReading);
 	}
 
 }
