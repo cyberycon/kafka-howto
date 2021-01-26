@@ -1,5 +1,6 @@
 package com.example.cyberycon.smartmeter;
 
+import com.example.cyberycon.smartmeter.config.MeterConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +14,10 @@ public class Meter implements Runnable {
 	
 	private boolean running ;
 
-	@Value("${meter.interval}")
+	private MeterConfiguration config;
+
 	private int readingInterval ;
 
-	@Value("${meter.id}")
 	private String meterId;
 
 	private MeterReadingSender sender;
@@ -24,13 +25,16 @@ public class Meter implements Runnable {
 	private static Logger logger = LoggerFactory.getLogger(Meter.class);
 
 
-	public Meter(MeterReadingSender sender) {
+	public Meter(MeterReadingSender sender, MeterConfiguration config) {
 		this.sender = sender;
+		this.config = config;
 	}
 
 	public void start() {
+		readingInterval = config.getInterval();
+		meterId = config.getId();
 		logger.info("Config interval is " + readingInterval ) ;
-		Thread t = new Thread(this); 
+		Thread t = new Thread(this);
 		t.start(); 
 	}
 
@@ -39,8 +43,8 @@ public class Meter implements Runnable {
 		running = true ;
 		while (running) { 
 			try {
-				Thread.sleep(readingInterval * 1000) ;
 				sender.sendReading(meterId, System.currentTimeMillis(), nextReading()) ;
+				Thread.sleep(readingInterval * 1000) ;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} 
