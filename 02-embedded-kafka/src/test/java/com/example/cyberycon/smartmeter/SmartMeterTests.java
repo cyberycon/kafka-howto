@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Import;
 import com.example.cyberycon.smartmeter.event.MeterReadingSender;
 import org.springframework.test.context.ActiveProfiles;
 
-//@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Import(TestConfig.class)
 @ActiveProfiles("test")
