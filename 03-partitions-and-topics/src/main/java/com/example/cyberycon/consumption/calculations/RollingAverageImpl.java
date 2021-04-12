@@ -7,7 +7,9 @@ import java.util.Queue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RollingAverageImpl implements RollingAverage {
 
     private Logger logger = LoggerFactory.getLogger(RollingAverageImpl.class); 
@@ -21,7 +23,7 @@ public class RollingAverageImpl implements RollingAverage {
 
     @Override
     public double latestAverage() {
-
+        int sum = 0 ; 
         long now = new Date().getTime();
         logger.trace("START LatestAverage timestamp = {}", now); 
 
@@ -33,11 +35,13 @@ public class RollingAverageImpl implements RollingAverage {
                 logger.trace("Removing: {}", tv) ; 
                 values.remove();
             }
+            else {
+                sum += tv.value; 
+            }
         }
         logger.trace("END   LatestAverage() "); 
-        return values.stream().mapToInt(TimedValue::valueOf).average().getAsDouble() ;
-
-    }
+        return (values.isEmpty()) ? 0 : sum / values.size(); 
+     }
 
     @Override
     public void setWindow(int milliseconds) {

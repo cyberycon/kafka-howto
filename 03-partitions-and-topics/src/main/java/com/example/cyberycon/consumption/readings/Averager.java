@@ -2,11 +2,15 @@ package com.example.cyberycon.consumption.readings;
 
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component 
-public class Aggregator implements ReadingConsumer {
+public class Averager implements ReadingConsumer {
 
+	private final Logger logger = LoggerFactory.getLogger(Averager.class);
+	
 	private int total ; 
 	
 	private long startTime ; 
@@ -20,16 +24,13 @@ public class Aggregator implements ReadingConsumer {
 				long currentTime = new Date().getTime() ;
 		String[] readingParts = reading.split(":");
 		if (readingParts.length != 3) {
-			// TODO - Create custom exception type
 			throw new RuntimeException("Invalid reading") ; 
 		}
-		// TODO - Wrap in try catch and throw custom exception
+
 		int latestValue = Integer.parseInt(readingParts[2]) ; 
 		total += latestValue; 
 		float average = total * 1000 / (startTime - currentTime); 
-		System.out.println(String.format("Total consumption %d", total )) ; 
-		System.out.println(String.format("Average consumption/s %d", average )) ;
-		
-	}
-
+		logger.info("Total consumption {}", total ) ; 
+		logger.info("Average consumption/s {}", average ) ;
+		}
 }
