@@ -9,5 +9,7 @@ class ConsumptionTrackerApplicationTests {
 	@Test
 	void contextLoads() {
 	}
+	
+	
 
 }
