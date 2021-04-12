@@ -2,6 +2,8 @@ package com.example.cyberycon.consumption.readings;
 
 import java.util.Date;
 
+import com.example.cyberycon.consumption.calculations.RollingAverage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -10,27 +12,27 @@ import org.springframework.stereotype.Component;
 public class Averager implements ReadingConsumer {
 
 	private final Logger logger = LoggerFactory.getLogger(Averager.class);
+
+	private RollingAverage rollingAverage; 
 	
-	private int total ; 
-	
-	private long startTime ; 
-	
-	public void start() {
-		startTime = new Date().getTime() ; 
+	public Averager (RollingAverage rollingAverage) {
+		this.rollingAverage = rollingAverage; 
 	}
-	
+
 	@Override
 	public void nextReading(String reading) {
-				long currentTime = new Date().getTime() ;
 		String[] readingParts = reading.split(":");
 		if (readingParts.length != 3) {
 			throw new RuntimeException("Invalid reading") ; 
 		}
-
-		int latestValue = Integer.parseInt(readingParts[2]) ; 
-		total += latestValue; 
-		float average = total * 1000 / (startTime - currentTime); 
-		logger.info("Total consumption {}", total ) ; 
-		logger.info("Average consumption/s {}", average ) ;
+		try {
+			int readingValue = Integer.parseInt(readingParts[2]); 
+			rollingAverage.addValue(readingValue);
+			logger.debug("Latest average" ); 
 		}
+		catch (NumberFormatException e) {
+			throw new RuntimeException (e) ; 
+		}
+		
+	}
 }
