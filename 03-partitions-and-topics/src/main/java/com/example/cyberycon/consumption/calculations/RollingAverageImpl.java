@@ -23,18 +23,18 @@ public class RollingAverageImpl implements RollingAverage {
     public double latestAverage() {
 
         long now = new Date().getTime();
-        logger.info("START LatestAverage timestamp = {}", now); 
+        logger.trace("START LatestAverage timestamp = {}", now); 
 
         Iterator<TimedValue>  iterator = values.iterator() ; 
         while (iterator.hasNext()) {
             TimedValue tv = iterator.next(); 
-            logger.info (tv.toString()); 
+            logger.trace (tv.toString()); 
             if ( (now - tv.timestamp) > window) {
-                logger.info("Removing: {}", tv) ; 
+                logger.trace("Removing: {}", tv) ; 
                 values.remove();
             }
         }
-        logger.info("END   LatestAverage() "); 
+        logger.trace("END   LatestAverage() "); 
         return values.stream().mapToInt(TimedValue::valueOf).average().getAsDouble() ;
 
     }
