@@ -2,8 +2,6 @@ package com.example.cyberycon.smartmeter;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -22,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @EmbeddedKafka(partitions = 2, brokerProperties = { "listeners=PLAINTEXT://localhost:19092", "port=19092" })
 @DirtiesContext
 public class SmartMeterIntegrationTests {
-
-	private Logger logger = LoggerFactory.getLogger(SmartMeterIntegrationTests.class);
 
 	private CountDownLatch latch;
 
