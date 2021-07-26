@@ -10,8 +10,10 @@
              }
 
                 steps {
-                    docker.withTool('local') {
-                        sh 'cd 02-embedded-kafka;mvn package'
+                    script {
+                        docker.withTool('local') {
+                            sh 'cd 02-embedded-kafka;mvn package'
+                        }
                     }
                 }
          }
