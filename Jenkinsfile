@@ -8,11 +8,12 @@
                      reuseNode true
                  }
              }
-             docker.withTool('local') {
+
                 steps {
-                    sh 'cd 02-embedded-kafka;mvn package'
+                    docker.withTool('local') {
+                        sh 'cd 02-embedded-kafka;mvn package'
+                    }
                 }
-             }
          }
      }
  }
