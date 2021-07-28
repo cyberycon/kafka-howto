@@ -17,7 +17,7 @@
      }
      post {
         always {
-            junit 'build/reports/**/*.xml'
+            junit '02-embedded-kafka/target/surefire-reports/**/*.xml'
         }
     }
  }
