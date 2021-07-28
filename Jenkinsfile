@@ -5,7 +5,7 @@
              agent {
                  docker {
                      image 'maven:3.8.1-adoptopenjdk-8'
-                     args '-v /Users/pkelly/jenkins-2/m2:/root/.m2'
+                     args '-v mvn-repository:/root/.m2'
                      reuseNode true
                  }
              }
