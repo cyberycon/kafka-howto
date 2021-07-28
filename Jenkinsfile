@@ -11,8 +11,7 @@
              }
 
              steps {
-                 echo 'Hello world!'
-                 sh 'cd 02-embedded-kafka;mvn package'
+                 sh 'cd 02-embedded-kafka;mvn clean package'
              }
          }
      }
