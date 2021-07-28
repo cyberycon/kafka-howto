@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 2, brokerProperties = { "listeners=PLAINTEXT://localhost:19092", "port=19092" })
 @DirtiesContext
-public class SmartMeterIntegrationIT {
+public class SmartMeterIntegrationTests {
 
 	private CountDownLatch latch;
 
