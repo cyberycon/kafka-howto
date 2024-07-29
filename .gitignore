@@ -8,8 +8,8 @@
 *.ctxt
 
 # vscode files
-*/.vscode/**
-*/.settings
+/.vscode/**
+/.settings
 
 .classpath
 .project
