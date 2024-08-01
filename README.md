@@ -1,2 +1,3 @@
 # kafka-howto
-Set of examples for using Kafka from Spring
+
+This repository has been moved to https://github.com/pkpivot/kafka-howto/ 
